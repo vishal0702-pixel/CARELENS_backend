@@ -15,7 +15,7 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://carelens-frontend-wqxz.vercel.app"
+    "https://carelens-frontend-cv4q.vercel.app"
   ],
   credentials: true
 }));
