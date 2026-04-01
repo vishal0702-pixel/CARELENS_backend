@@ -17,7 +17,9 @@ app.use(cors({
     "http://localhost:5173",
     "https://carelens-frontend-cv4q.vercel.app"
   ],
-  credentials: true
+  credentials: true,
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"]
 }));
 
 app.use(express.json());
@@ -26,39 +28,32 @@ app.use(cookieParser());
 let isConnected = false;
 
 async function initializeConnection() {
-  try {
-    if (!isConnected) {
-      await connectDB();
+  if (!isConnected) {
+    await connectDB();
 
-      // connect redis only if not already connected
-      if (!redisclient.isOpen) {
-        await redisclient.connect();
-      }
-
-      console.log("MongoDB and Redis connected");
-      isConnected = true;
+    if (!redisclient.isOpen) {
+      await redisclient.connect();
     }
-  } catch (error) {
-    console.error("Database connection failed:", error);
-    throw error;
+
+    console.log("MongoDB and Redis connected");
+    isConnected = true;
   }
 }
 
-// Middleware to ensure DB connection
-app.use(async (req, res, next) => {
-  try {
+app.use(async (req,res,next)=>{
+  try{
     await initializeConnection();
     next();
-  } catch (err) {
-    res.status(500).json({ error: "Database connection failed" });
+  }catch(err){
+    console.error("DB error:",err);
+    res.status(500).json({error:"Database connection failed"});
   }
 });
 
-// Routes
 app.use("/user", authroutes);
 app.use("/symptom", dashboardroute);
 
-app.get("/", (req, res) => {
+app.get("/",(req,res)=>{
   res.send("CareLens Backend Running 🚀");
 });
 
