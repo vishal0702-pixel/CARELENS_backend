@@ -25,7 +25,7 @@ const intializeconnection = async()=>{
    try{  
       await Promise.all([main(),redisclient.connect()]);
       console.log("both database connected ");
-         app.listen( 3000, ()=>{
+         app.listen( process.env.PORT, ()=>{
             console.log("databse connected and server listen  suceesfully at 6000")
        
       })
